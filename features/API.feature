@@ -1,6 +1,6 @@
 Feature: API
 
-
+@get
   Scenario: api get
     Given I want to get the users
     When I send an api request
