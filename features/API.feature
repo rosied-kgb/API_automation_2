@@ -1,6 +1,6 @@
 Feature: API
 
-@get
+
   Scenario: api get
     Given I want to get the users
     When I send an api request
@@ -11,3 +11,9 @@ Feature: API
     Given I want to post a user
     When I send an api request
     Then the user is added
+
+
+  Scenario: Test API Patch
+    Given I want to patch a user
+    When I send an api request
+    Then the user is updated
