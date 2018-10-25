@@ -24,12 +24,6 @@ def send_post(host, path, json)
   @response = http.request(request)
 end
 
-def update_user
-  @user = User
-  @user.name = "Tom"
-  JSON.generate(@user)
-
-end
 
 def send_patch(host, path, json)
   url = URI(host + path)
@@ -37,6 +31,25 @@ def send_patch(host, path, json)
   http.use_ssl = true
   http.verify_mode = OpenSSL::SSL::VERIFY_NONE
   request = Net::HTTP::Patch.new(url)
+  request['Content-Type'] = 'application/json'
+  request.body = json
+  @response = http.request(request)
+end
+
+def update_user
+  @user = User.new
+  @user.first_name = 'Sarah'
+  @user.last_name = 'Elliot'
+  @user.address[0].house = 412
+  JSON.generate(@user)
+end
+
+def send_put(host, path, json)
+  url = URI(host + path)
+  http = Net::HTTP.new(url.host, url.port)
+  http.use_ssl = true
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Put.new(url)
   request['Content-Type'] = 'application/json'
   request.body = json
   @response = http.request(request)

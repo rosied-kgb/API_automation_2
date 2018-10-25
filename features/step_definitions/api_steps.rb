@@ -7,7 +7,6 @@ Then(/^the response is a success$/) do
   p @response.message
   expect(@response.code).to eq('200')
   expect(@response.message).to eq('OK')
-
 end
 
 Given(/^I want to post a user$/) do
@@ -18,8 +17,6 @@ end
 Given(/^I want to patch a user$/) do
   @request = 'patch'
   @json = update_user
-
-
 end
 
 When(/^I send an api request$/) do
@@ -30,18 +27,53 @@ When(/^I send an api request$/) do
       send_post(TestConfig['host'], '/api/users', @json)
     when 'patch'
       send_patch(TestConfig['host'], '/api/users/1', @json)
+    when 'put'
+      send_put(TestConfig['host'], '/api/users/2', @json)
+    when 'get_with_parameters'
+      send_get_with_parameters(TestConfig['host'], '/api/users')
+    else
+      raise('Request method not available')
   end
 end
 
 Then(/^the user is added$/) do
   p @response.code
   p @response.message
-  expect(JSON.parse(@response.body)['address'][0]['city']).to eq(@user.address[0].city)
+  expect(@response.code).to eq('201')
+  expect(JSON.parse(@response.body)['first_name']).to eq(@user.first_name)
+  expect(JSON.parse(@response.body)['last_name']).to eq(@user.last_name)
+  expect(JSON.parse(@response.body)['address'][0]['house']).to eq(@user.address[0].house)
   id = JSON.parse(@response.body)['id']
   p "Your User Id is: #{id}"
 end
 
+Given(/^I want to update a user$/) do
+  @json = update_user
+  @request = 'put'
+end
 
-Then(/^the user is updated$/) do
-  pending
+And (/^the user is updated$/) do
+  #response = JSON.parse(@response.body)
+  expect(JSON.parse(@response.body)['first_name']).to eq(@user.first_name)
+  expect(JSON.parse(@response.body)['last_name']).to eq(@user.last_name)
+  expect(JSON.parse(@response.body)['address'][0]['house']).to eq(@user.address[0].house)
+  expect(JSON.parse(@response.body)['updatedAt'].to_s[0..9]).to eq(Time.now.to_s[0..9])
+end
+
+And(/^I want to get "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
+  response = JSON.parse{@response.body}
+  expect(response['page']).to eq{page.to_i}
+  expect(response['per_page']).to eq{number_of_users.to_i}
+end
+
+Given(/^I want to get the users with parameters$/) do
+  @request = 'get_with_parameters'
+end
+
+And(/^the response displays "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
+  response = JSON.parse(@response.body)
+  p response['page']
+  p response['per page']
+  expect(response['page']).to eq{page.to_i}
+  expect(response['per_page']).to eq{number_of_users.to_i}
 end
