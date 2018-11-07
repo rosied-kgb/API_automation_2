@@ -30,7 +30,7 @@ When(/^I send an api request$/) do
     when 'put'
       send_put(TestConfig['host'], '/api/users/2', @json)
     when 'get_with_parameters'
-      send_get_with_parameters(TestConfig['host'], '/api/users')
+      send_get_with_parameters(TestConfig['host'], '/api/users', @parameters)
     else
       raise('Request method not available')
   end
@@ -66,15 +66,12 @@ end
 
 And(/^I want to get "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
   @parameters = "page=#{page}&per_page=#{number_of_users}"
- # response = JSON.parse{@response.body}
- # expect(response['page']).to eq{page.to_i}
- # expect(response['per_page']).to eq{number_of_users.to_i}
 end
 
 And(/^the response displays "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
   response = JSON.parse(@response.body)
   p response['page']
-  p response['per page']
-  expect(response['page']).to eq{page.to_i}
-  expect(response['per_page']).to eq{number_of_users.to_i}
+  p response['per_page']
+  expect(response['page']).to eq(page.to_i)
+  expect(response['per_page']).to eq(number_of_users.to_i)
 end
