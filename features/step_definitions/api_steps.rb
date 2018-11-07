@@ -28,9 +28,9 @@ When(/^I send an api request$/) do
     when 'patch'
       send_patch(TestConfig['host'], '/api/users/1', @json)
     when 'put'
-      send_put(TestConfig['host'], '/api/users/2', @json)
+      send_put(TestConfig['host'], '/api/users/1', @json)
     when 'get_with_parameters'
-      send_get_with_parameters(TestConfig['host'], '/api/users')
+      send_get_with_parameters(TestConfig['host'], '/api/users', @parameters)
     else
       raise('Request method not available')
   end
@@ -53,11 +53,11 @@ Given(/^I want to update a user$/) do
 end
 
 And (/^the user is updated$/) do
-  #response = JSON.parse(@response.body)
-  expect(JSON.parse(@response.body)['first_name']).to eq(@user.first_name)
-  expect(JSON.parse(@response.body)['last_name']).to eq(@user.last_name)
-  expect(JSON.parse(@response.body)['address'][0]['house']).to eq(@user.address[0].house)
-  expect(JSON.parse(@response.body)['updatedAt'].to_s[0..9]).to eq(Time.now.to_s[0..9])
+  response = JSON.parse(@response.body)
+  expect(response['first_name']).to eq(@user.first_name)
+  expect(response['last_name']).to eq(@user.last_name)
+  expect(response['address'][0]['house']).to eq(@user.address[0].house)
+  expect(response['updatedAt'].to_s[0..9]).to eq(Time.now.to_s[0..9])
 end
 
 Given(/^I want to get the users with parameters$/) do
@@ -66,15 +66,12 @@ end
 
 And(/^I want to get "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
   @parameters = "page=#{page}&per_page=#{number_of_users}"
- # response = JSON.parse{@response.body}
- # expect(response['page']).to eq{page.to_i}
- # expect(response['per_page']).to eq{number_of_users.to_i}
 end
 
 And(/^the response displays "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
   response = JSON.parse(@response.body)
   p response['page']
-  p response['per page']
-  expect(response['page']).to eq{page.to_i}
-  expect(response['per_page']).to eq{number_of_users.to_i}
+  p response['per_page']
+  expect(response['page']).to eq(page.to_i)
+  expect(response['per_page']).to eq(number_of_users.to_i)
 end

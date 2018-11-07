@@ -54,3 +54,14 @@ def send_put(host, path, json)
   request.body = json
   @response = http.request(request)
 end
+
+def send_get_with_parameters(host, path, parameters)
+  url = URI(host + path)
+  url.query = parameters
+  http = Net::HTTP.new(url.host, url.port)
+  http.use_ssl = true
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Get.new(url)
+  request['Content-Type'] = 'application/json'
+  @response = http.request(request)
+end
