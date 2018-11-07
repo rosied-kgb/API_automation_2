@@ -17,14 +17,15 @@ Feature: API
     Given I want to patch a user
     When I send an api request
     Then the user is updated
-  @api
+
+
   Scenario: api put
     Given I want to update a user
     When I send an api request
     Then the response is a success
     And the user is updated
 
-
+  @api
   Scenario: api get with params
     Given I want to get the users with parameters
     And I want to get "3" pages with "4" users per page

@@ -60,14 +60,15 @@ And (/^the user is updated$/) do
   expect(JSON.parse(@response.body)['updatedAt'].to_s[0..9]).to eq(Time.now.to_s[0..9])
 end
 
-And(/^I want to get "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
-  response = JSON.parse{@response.body}
-  expect(response['page']).to eq{page.to_i}
-  expect(response['per_page']).to eq{number_of_users.to_i}
-end
-
 Given(/^I want to get the users with parameters$/) do
   @request = 'get_with_parameters'
+end
+
+And(/^I want to get "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
+  @parameters = "page=#{page}&per_page=#{number_of_users}"
+ # response = JSON.parse{@response.body}
+ # expect(response['page']).to eq{page.to_i}
+ # expect(response['per_page']).to eq{number_of_users.to_i}
 end
 
 And(/^the response displays "([^"]*)" pages with "([^"]*)" users per page$/) do |page, number_of_users|
