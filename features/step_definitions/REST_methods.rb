@@ -65,3 +65,13 @@ def send_get_with_parameters(host, path, parameters)
   request['Content-Type'] = 'application/json'
   @response = http.request(request)
 end
+
+def send_delete(host, path)
+  url = URI(host + path)
+  http = Net::HTTP.new(url.host, url.port)
+  http.use_ssl = true
+  http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+  request = Net::HTTP::Delete.new(url)
+  request['Content-Type'] = 'application/json'
+  @response = http.request(request)
+end

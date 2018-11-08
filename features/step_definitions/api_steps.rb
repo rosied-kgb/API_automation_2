@@ -31,6 +31,10 @@ When(/^I send an api request$/) do
       send_put(TestConfig['host'], '/api/users/1', @json)
     when 'get_with_parameters'
       send_get_with_parameters(TestConfig['host'], '/api/users', @parameters)
+    when 'delete'
+      send_delete(TestConfig['host'], '/api/users/2')
+    when 'register'
+      send_post(TestConfig['host'], '/api/register', @json)
     else
       raise('Request method not available')
   end
@@ -74,4 +78,31 @@ And(/^the response displays "([^"]*)" pages with "([^"]*)" users per page$/) do 
   p response['per_page']
   expect(response['page']).to eq(page.to_i)
   expect(response['per_page']).to eq(number_of_users.to_i)
+end
+
+Given(/^I want to delete a user$/) do
+  @request = 'delete'
+end
+
+Then(/^the user is deleted$/) do
+  p @response.code
+  p @response.message
+  expect(@response.code).to eq('204')
+  expect(@response.message).to eq('No Content')
+  expect(@response.body).to eq(nil)
+end
+
+Given(/^I want to register a user with email (.*) and password (.*)$/) do |email, password|
+  @request = 'register'
+  @register_user = Credentials.new
+  @register_user.email = email
+  @register_user.password = password
+  @json = JSON.generate(@register_user)
+
+end
+
+Then(/^the following (.*) is returned$/) do |error_message|
+  p @response.code
+  p @response.message
+  expect(JSON.parse(@response.body)['error']).to eq(error_message)
 end
