@@ -35,6 +35,8 @@ When(/^I send an api request$/) do
       send_delete(TestConfig['host'], '/api/users/2')
     when 'register'
       send_post(TestConfig['host'], '/api/register', @json)
+    when 'options'
+      send_options(TestConfig['host'], '/api/register')
     else
       raise('Request method not available')
   end
@@ -105,4 +107,54 @@ Then(/^the following (.*) is returned$/) do |error_message|
   p @response.code
   p @response.message
   expect(JSON.parse(@response.body)['error']).to eq(error_message)
+end
+
+Then(/^the user registration is successful$/) do
+  p @response.code
+  p @response.message
+  expect(@response.code).to eq('201')
+  expect(@response.message).to eq('Created')
+  expect(JSON.parse(@response.body)['token']).to eq("QpwL5tke4Pnpja7X")
+  expect(JSON.parse(@response.body)['token']).to_not eq(nil)
+end
+
+Then(/^the response code, message, and token are:$/) do |table|
+  #class variable
+  @failures = []
+  responses = table.raw
+  #iterating through array
+  responses.each do |header|
+    response = header[0]
+    #switch statement
+    case header[0]
+      when '201'
+        actual = @response.code
+      when 'Created'
+        actual = @response.message
+      when 'QpwL5tke4Pnpja7X'
+        actual = JSON.parse(@response.body)['token']
+      else
+        raise "#{response} does not exist"
+    end
+    #unless is a reverse if
+  #  unless actual == response
+   #   @failures.push("The expected #{response} was #{actual}")
+    @failures.push("The expected #{response} was #{actual}") unless actual == response
+
+    end
+  raise "#{@failures}" unless @failures.eql?([])
+end
+
+Given (/^I want to find out the options$/) do
+@request = 'options'
+end
+
+Then(/^the response is not allowed$/) do
+  p @response.code
+  p @response.message
+  expect(@response.code).to eq('204')
+  expect(@response.message).to eq('No Content')
+  if @response.header['access-control-allow-methods'].include?('options')
+    raise('Options is included')
+  end
 end
